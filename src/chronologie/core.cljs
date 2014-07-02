@@ -1,7 +1,8 @@
 (ns chronologie.core
   (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
-    (:import [goog.ui IdGenerator]))
+            [om.dom :as dom :include-macros true]
+            [chronologie.ocda :as ocda])
+  (:import [goog.ui IdGenerator]))
 
 (enable-console-print!)
 
