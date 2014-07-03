@@ -17,14 +17,12 @@
     out))
 
 (defn get-json-bulk [& urls]
-  (let [out (chan 1)]
-    (go (let [chans (map get-json urls)]
-          (loop [i 0 ret []]
-            (if (= (count ret) (count chans)))
-            (>! out ret)
-            (let [[v _] (alts! chans)]
-              (recur (inc i) (conj ret v))))))
-    out))
+  (go (let [chans (vec (map get-json urls))]
+          (loop [i 0
+                 res []]
+            (if (= i (count chans))
+              res
+              (recur (inc i) (conj res (<! (chans i)))) )))))
 
 (def test-urls ["http://api.opencultuurdata.nl/v0/rijksmuseum/6b4118e96e1b25b376c46086c4c0e00898ff13e2"
                 "http://api.opencultuurdata.nl/v0/rijksmuseum/6b4118e96e1b25b376c46086c4c0e00898ff13e2"])
@@ -42,13 +40,12 @@
 
   (go (prn (<! (go "aap"))))
 
-  (go (let [chans (map get-json test-urls)]
-        (loop [i 0 ret []]
-          (if (= i (count chans)))
-          ret
-          (let [[v _] (alts! chans)]
-            (recur (inc i) (conj ret v))))))
-
+  (go (let [chans (vec (map get-json test-urls))]
+          (loop [i 0
+                 res []]
+            (if (= i (count chans))
+              res
+              (recur (inc i) (conj res (<! (chans i)))) ))))
 )
 
 ;;(defn get-data [url]
