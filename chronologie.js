@@ -10,4 +10,4 @@ goog.addDependency("../cljs/core/async.js", ['cljs.core.async'], ['cljs.core.asy
 goog.addDependency("../chronologie/ocda.js", ['chronologie.ocda'], ['cljs.core', 'goog.net.XhrIo', 'cljs.core.async']);
 goog.addDependency("../om/dom.js", ['om.dom'], ['cljs.core']);
 goog.addDependency("../om/core.js", ['om.core'], ['cljs.core', 'om.dom']);
-goog.addDependency("../chronologie/core.js", ['chronologie.core'], ['cljs.core', 'om.core', 'om.dom', 'goog.ui.IdGenerator', 'chronologie.ocda']);
+goog.addDependency("../chronologie/core.js", ['chronologie.core'], ['cljs.core', 'om.core', 'om.dom', 'goog.ui.IdGenerator', 'cljs.core.async', 'chronologie.ocda']);

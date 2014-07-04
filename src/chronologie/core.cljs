@@ -1,7 +1,9 @@
 (ns chronologie.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [chronologie.ocda :as ocda])
+            [cljs.core.async :refer [<!]]
+            [chronologie.ocda :refer [get-specs]])
   (:import [goog.ui IdGenerator]))
 
 (enable-console-print!)
@@ -67,6 +69,22 @@
                                                   :year 2000}])
                       :score 0}))
 
+(def empty-state {:deck []
+                  :timeline (space-timeline [])
+                  :score 0})
+
+(def example-card-specs [["rijksmuseum" "6b4118e96e1b25b376c46086c4c0e00898ff13e2"
+                                        "d8ee6313f6abe6ab37d72c2691281cf1237b94e7"
+                                        "22d3d3d1a6a11177841602e8e9eb15f797949151"
+                                        "0618c5188f2fb2c48cdc7d8e27c17276befdc813"
+                                        "c0e90ba269dcbcfc7075512935c6b8fab1ead4d4"]])
+
+(defn new-game [card-specs]
+  (let [app-state (atom empty-state)
+        set-cards #(assoc %1 :deck %2)]
+    (go (->> (<! (get-specs card-specs))
+             (swap! app-state set-cards)))
+    app-state))
 
 ; Event handlers
 
@@ -94,14 +112,20 @@
         (apply dom/ul nil
                (om/build-all card-view (:timeline app)))))))
 
+(defn deck-view [deck owner]
+  (reify
+    om/IRender
+    (render [this]
+      (dom/div nil
+        (dom/h2 nil "Next card:")
+        (om/build card-view (deck 0))))))
+
 (om/root
   (fn [app owner]
     (dom/div nil
              (dom/p nil (str "Score: " (:score app)))
              (if (-> app game-over? not)
-               (dom/div nil
-                        (dom/h2 nil "Next card:")
-                        (om/build card-view (get-in app [:deck 0]))))
+                 (om/build deck-view (:deck app)))
              (om/build timeline-view app)))
   app-state
   {:target (. js/document (getElementById "app"))})

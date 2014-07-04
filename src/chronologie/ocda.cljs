@@ -24,10 +24,40 @@
               res
               (recur (inc i) (conj res (<! (chans i)))) )))))
 
+(def base-url "http://api.opencultuurdata.nl/v0/")
+
+(defn object-url
+  [source object]
+  (str base-url source "/" object))
+
+(defn spec->urls
+  [spec]
+  (let [source (first spec)
+        ids (rest spec)]
+    (map #(object-url source %1) ids)))
+
+(defn specs->urls
+  [specs]
+  (flatten (map spec->urls specs)))
+
+(defn get-specs
+  [specs]
+  (apply get-json-bulk (specs->urls specs)))
+
 (def test-urls ["http://api.opencultuurdata.nl/v0/rijksmuseum/6b4118e96e1b25b376c46086c4c0e00898ff13e2"
                 "http://api.opencultuurdata.nl/v0/rijksmuseum/6b4118e96e1b25b376c46086c4c0e00898ff13e2"])
 
 (comment
+
+  (def example-card-specs [["rijksmuseum" "6b4118e96e1b25b376c46086c4c0e00898ff13e2"
+                                        "d8ee6313f6abe6ab37d72c2691281cf1237b94e7"
+                                        "22d3d3d1a6a11177841602e8e9eb15f797949151"
+                                        "0618c5188f2fb2c48cdc7d8e27c17276befdc813"
+                                        "c0e90ba269dcbcfc7075512935c6b8fab1ead4d4"]])
+
+  (spec->urls ["rijksmuseum" "6b4118e96e1b25b376c46086c4c0e00898ff13e2"])
+
+  (go (prn (<! (get-specs example-card-specs))))
 
 (go (-> (<! (get-json "http://api.opencultuurdata.nl/v0/rijksmuseum/6b4118e96e1b25b376c46086c4c0e00898ff13e2"))
          prn))
