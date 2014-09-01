@@ -16,7 +16,7 @@
             [environ/environ.lein "0.2.1"]]
 
   :hooks [environ.leiningen.hooks
-          ]
+          leiningen.cljsbuild]
 
   :source-paths ["src"]
 
