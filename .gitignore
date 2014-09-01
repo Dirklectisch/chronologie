@@ -7,5 +7,7 @@ pom.xml
 .lein-deps-sum
 .lein-repl-history
 .lein-plugins/
+.lein-env
 .nrepl-port
 chronologie.js
+
