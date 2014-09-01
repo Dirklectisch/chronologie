@@ -25,13 +25,13 @@
                    :compiler {
                      :output-to "resources/public/chronologie.js"
                      :output-dir "out"
-                     :optimizations :whitespace}}}
+                     :optimizations :whitespace }}
              :prod {:id "chronologie"
                     :source-paths ["src"]
                     :compiler {
                       :output-to "resources/public/chronologie.js"
                       :output-dir "out"
-                      :optimizations :whitespace}}}}
+                      :optimizations :whitespace }}}}
 
   :uberjar-name "chronologie.jar"
   :main chronolgie.web
