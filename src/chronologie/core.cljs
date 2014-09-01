@@ -73,11 +73,12 @@
                   :timeline (space-timeline [])
                   :score 0})
 
-(def example-card-specs [["rijksmuseum" "6b4118e96e1b25b376c46086c4c0e00898ff13e2"
-                                        "d8ee6313f6abe6ab37d72c2691281cf1237b94e7"
+(def example-card-specs [["rijksmuseum" "d8ee6313f6abe6ab37d72c2691281cf1237b94e7"
                                         "22d3d3d1a6a11177841602e8e9eb15f797949151"
-                                        "0618c5188f2fb2c48cdc7d8e27c17276befdc813"
-                                        "c0e90ba269dcbcfc7075512935c6b8fab1ead4d4"]])
+                                        "c0e90ba269dcbcfc7075512935c6b8fab1ead4d4"]
+                         ["amsterdammuseum" "7017a3f71bd08ff38489ec8024024542bced1c7e"
+                                            "b46a5095c57a65630a0295f09ae92744dc9cee6b"
+                                            "40669cdde9c93d6cb38442716ca66140c4cf9f5f"]])
 
 (defn new-game [card-specs]
   (let [app-state (atom empty-state)
@@ -107,6 +108,7 @@
                               (dom/img #js {:src (get-media-url card)})))
                      (dom/div #js {:className "meta"}
                               (dom/span #js {:className "title"} (:title card))
+                              (dom/span #js {:className "author"} (-> card :authors first))
                               (dom/span #js {:className "date"} (:date card))))))
 
 (defmethod card-view false [card owner]

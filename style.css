@@ -1,3 +1,5 @@
+/* Global */
+
 * {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -7,6 +9,8 @@
 .hidden {
   display: none;
 }
+
+/* Cards */
 
 .card {
   display: block;
@@ -42,6 +46,19 @@
 }
 
 .card .meta {
+  margin-left: 20px;
+
+}
+
+.card .meta span {
+  display: block;
+  font-weight: bold;
+  border-style: solid;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+  border-width: 3px;
+  margin-top: 5px;
+  padding-left: 2px;
 }
 
 .timeline {
