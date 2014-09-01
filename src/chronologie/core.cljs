@@ -20,16 +20,16 @@
   (first (indices #(= (:id %1) (:id card)) v)))
 
 (defn valid-timeline? [timeline]
-  (let [get-year #(:year %1)
-        stripped (filter get-year timeline)
-        sorted (sort-by get-year stripped)]
+  (let [get-date #(:date %1)
+        stripped (filter get-date timeline)
+        sorted (sort-by get-date stripped)]
     (= sorted stripped)))
 
 (defn empty-card []
   {:id (guid)})
 
 (defn space-timeline [timeline]
-   (-> (filter #(:year %1) timeline)
+   (-> (filter #(:date %1) timeline)
        (interleave (repeatedly empty-card))
        (conj (empty-card))
        (vec)))
@@ -55,7 +55,7 @@
 
 ; Application state
 
-(def app-state (atom {:deck (shuffle [{:id (guid)
+(def some-state (atom {:deck (shuffle [{:id (guid)
                                       :title "mies"
                                       :year 2010}
                                      {:id (guid)
@@ -86,6 +86,8 @@
              (swap! app-state set-cards)))
     app-state))
 
+(def app-state (new-game example-card-specs))
+
 ; Event handlers
 
 (defn handle-card-place [target]
@@ -98,10 +100,22 @@
 (defmulti card-view (fn [card _] (contains? card :title)))
 
 (defmethod card-view true [card owner]
-  (dom/li #js {:id (:id card)} (str (:title card) ", " (:year card))))
+  (let [get-media-url #(-> %1 :media_urls first :url)]
+    (dom/li #js {:className "card"}
+            (dom/div nil
+                     (dom/div #js {:className "frame"}
+                              (dom/img #js {:src (get-media-url card)})))
+                     (dom/div #js {:className "meta"}
+                              (dom/span #js {:className "title"} (:title card))
+                              (dom/span #js {:className "date"} (:date card))))))
 
 (defmethod card-view false [card owner]
-  (dom/li #js {:id (:id card) :onClick (fn [_] (handle-card-place @card))} "insert"))
+  (dom/li #js {:id (:id card)
+               :className "card"
+               :onClick (fn [_] (handle-card-place @card))}
+          (dom/div nil
+                   (dom/div #js {:className "frame empty"}
+                            (dom/span nil "?")))))
 
 (defn timeline-view [app owner]
   (reify
@@ -109,7 +123,7 @@
     (render [this]
       (dom/div nil
         (dom/h2 nil "Timeline")
-        (apply dom/ul nil
+        (apply dom/ul #js {:className "timeline"}
                (om/build-all card-view (:timeline app)))))))
 
 (defn deck-view [deck owner]
@@ -129,3 +143,5 @@
              (om/build timeline-view app)))
   app-state
   {:target (. js/document (getElementById "app"))})
+
+(-> @app-state :deck first)

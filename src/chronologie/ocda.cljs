@@ -10,7 +10,7 @@
         read-json #(-> %1
                        .-target
                        .getResponseJson
-                       js->clj)]
+                       (js->clj :keywordize-keys true))]
 
     (xhr/send url
               (fn [e] (put! out (read-json e))))
