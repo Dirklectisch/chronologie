@@ -15,7 +15,8 @@
   :plugins [[lein-cljsbuild "1.0.2"]
             [environ/environ.lein "0.2.1"]]
 
-  :hooks [environ.leiningen.hooks]
+  :hooks [environ.leiningen.hooks
+          leiningen.cljsbuild]
 
   :source-paths ["src"]
 
@@ -24,13 +25,13 @@
                    :source-paths ["src"]
                    :compiler {
                      :output-to "resources/public/chronologie.js"
-                     :output-dir "out"
+                     :output-dir "out/dev"
                      :optimizations :whitespace }}
              :prod {:id "chronologie"
                     :source-paths ["src"]
                     :compiler {
                       :output-to "resources/public/chronologie.js"
-                      :output-dir "out"
+                      :output-dir "out/prod"
                       :optimizations :whitespace }}}}
 
   :uberjar-name "chronologie.jar"
