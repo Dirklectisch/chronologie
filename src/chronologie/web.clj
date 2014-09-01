@@ -10,14 +10,14 @@
 (defn splash []
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body (pr-str ["Hello" :from 'Heroku])})
+   :body (slurp (io/resource "public/index.html")) })
 
 (defroutes app
   (GET "/" []
        (splash))
   (route/resources "/")
   (ANY "*" []
-       (route/not-found (slurp (io/resource "404.html")))))
+       (route/not-found (slurp (io/resource "public/404.html")))))
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port) 5000))]
