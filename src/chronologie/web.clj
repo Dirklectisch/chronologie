@@ -1,27 +1,27 @@
 (ns chronologie.web
-  (:require [compojure.core :refer [defroutes GET PUT POST DELETE ANY]]
-            [compojure.handler :refer [site]]
-            [compojure.route :as route]
-            [clojure.java.io :as io]
-            [ring.adapter.jetty :as jetty]
+  (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.resource :refer [wrap-resource]]
+						[ring.middleware.file :refer [wrap-file]]
+						[ring.middleware.file-info :refer [wrap-file-info]]
+						[ring.util.response :refer [resource-response]]
             [environ.core :refer [env]]))
+						
+(def index-file
+	(cond (env :index-file) (env :index-file)
+				(= true (env :production)) "public/index.html"
+				true "public/debug.html"))
 
-(defn splash []
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (slurp (io/resource "public/index.html")) })
-
-(defroutes app
-  (GET "/" []
-       (splash))
-  (route/resources "/")
-  (ANY "*" []
-       (route/not-found (slurp (io/resource "public/404.html")))))
+(defn index [request]
+	(resource-response index-file))
+	
+(def static
+	(-> index
+			(wrap-resource "/public")
+			(wrap-file-info)))
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port) 5000))]
-    (jetty/run-jetty (site #'app) {:port port :join? false})))
+    (jetty/run-jetty #'static {:port port :join? false})))
 
 ;; For interactive development:
 ;; (.stop server)

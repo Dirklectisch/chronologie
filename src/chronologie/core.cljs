@@ -102,22 +102,28 @@
 
 (defmethod card-view true [card owner]
   (let [get-media-url #(-> %1 :media_urls first :url)]
-    (dom/li #js {:className "card"}
-            (dom/div nil
-                     (dom/div #js {:className "frame"}
-                              (dom/img #js {:src (get-media-url card)})))
-                     (dom/div #js {:className "meta"}
-                              (dom/span #js {:className "title"} (:title card))
-                              (dom/span #js {:className "author"} (-> card :authors first))
-                              (dom/span #js {:className "date"} (:date card))))))
+		(reify
+			om/IRender
+			(render [_]
+		    (dom/li #js {:className "card"}
+		            (dom/div nil
+		                     (dom/div #js {:className "frame"}
+		                              (dom/img #js {:src (get-media-url card)})))
+		                     (dom/div #js {:className "meta"}
+		                              (dom/span #js {:className "title"} (:title card))
+		                              (dom/span #js {:className "author"} (-> card :authors first))
+		                              (dom/span #js {:className "date"} (:date card))))))))
 
 (defmethod card-view false [card owner]
-  (dom/li #js {:id (:id card)
-               :className "card"
-               :onClick (fn [_] (handle-card-place @card))}
-          (dom/div nil
-                   (dom/div #js {:className "frame empty"}
-                            (dom/span nil "?")))))
+	(reify
+		om/IRender
+		(render [_]
+		  (dom/li #js {:id (:id card)
+		               :className "card"
+		               :onClick (fn [_] (handle-card-place @card))}
+		          (dom/div nil
+		                   (dom/div #js {:className "frame empty"}
+		                            (dom/span nil "?")))))))
 
 (defn timeline-view [app owner]
   (reify
@@ -135,15 +141,25 @@
       (dom/div nil
         (dom/h2 nil "Next card:")
         (om/build card-view (deck 0))))))
+				
+(defn app-view [app owner]
+	(reify
+		om/IRender
+		(render [this]
+	    (dom/div nil
+	             (dom/p nil (str "Score: " (:score app)))
+	             (if (-> app game-over? not)
+	                 (om/build deck-view (:deck app)))
+	             (om/build timeline-view app)))))				
 
-(om/root
-  (fn [app owner]
-    (dom/div nil
-             (dom/p nil (str "Score: " (:score app)))
-             (if (-> app game-over? not)
-                 (om/build deck-view (:deck app)))
-             (om/build timeline-view app)))
-  app-state
+(om/root app-view app-state
   {:target (. js/document (getElementById "app"))})
 
-(-> @app-state :deck first)
+; (defn widget [data owner]
+;   (reify
+;     om/IRender
+;     (render [this]
+;       (dom/h1 nil (:text data)))))
+;
+; (om/root widget {:text "Hello world!"}
+;   {:target (. js/document (getElementById "app"))})
